@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <style>
+    @font-face {
+      font-family: 'VAGRounded';
+      src: url('VAGRoundedBT.ttf') format('truetype');
+    }
+    #cert {
+      width: 100%;
+      max-width: 900px;
+      height: auto;
+      border: 1px solid #ccc;
+      display: block;
+      margin: auto;
+    }
+    .panel {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 6px 10px;
+      font-size: 16px;
+      width: 250px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="panel">
+  <input id="nombre" placeholder="Nombre estudiante" oninput="render()">
+  <input id="trayecto" placeholder="Trayecto"          oninput="render()">
+  <button onclick="downloadCert()">Descargar</button>
+</div>
+
+<canvas id="cert" width="2000" height="1414"></canvas>
+
+<script>
+  const canvas = document.getElementById('cert');
+  const ctx = canvas.getContext('2d');
+  const bg  = new Image();
+  bg.src = 'plantilla.jpg';
+
+  function getQuery(param) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(param);
+  }
+
+  // rellenar desde GET si vienen
+  const nombreGET   = getQuery('nombre');
+  const trayectoGET = getQuery('trayecto');
+  if (nombreGET)   document.getElementById('nombre').value   = nombreGET;
+  if (trayectoGET) document.getElementById('trayecto').value = trayectoGET;
+
+  bg.onload = () => render();
+
+  function render() {
+    const nombre   = document.getElementById('nombre').value   || 'NOMBRE ESTUDIANTE';
+    const trayecto = document.getElementById('trayecto').value || 'Maker Junior';
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#000';
+
+    // Nombre
+    ctx.font = 'bold 80px VAGRounded, Arial';
+    ctx.fillText(nombre, canvas.width / 2, 350);
+
+    // Línea del trayecto
+    ctx.font = 'normal 80px VAGRounded, Arial';
+    ctx.fillText(trayecto, canvas.width / 2, 520);
+  }
+
+  function downloadCert() {
+    const a = document.createElement('a');
+    a.download = 'certificado.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  }
+</script>
+
+</body>
+</html>
