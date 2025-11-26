@@ -38,23 +38,42 @@
 <canvas id="cert" width="2000" height="1414"></canvas>
 
 <script>
-  const canvas = document.getElementById('cert');
+    const canvas = document.getElementById('cert');
   const ctx = canvas.getContext('2d');
   const bg  = new Image();
   bg.src = 'plantilla.jpg';
 
+  // GET
   function getQuery(param) {
     const url = new URL(window.location.href);
     return url.searchParams.get(param);
   }
 
-  // rellenar desde GET si vienen
   const nombreGET   = getQuery('nombre');
   const trayectoGET = getQuery('trayecto');
   if (nombreGET)   document.getElementById('nombre').value   = nombreGET;
   if (trayectoGET) document.getElementById('trayecto').value = trayectoGET;
 
-  bg.onload = () => render();
+  let bgLoaded   = false;
+  let fontLoaded = false;
+
+  // cuando cargue la imagen
+  bg.onload = () => {
+    bgLoaded = true;
+    maybeStart();
+  };
+
+  // cuando cargue la fuente
+  document.fonts.load('80px VAGRounded').then(() => {
+    fontLoaded = true;
+    maybeStart();
+  });
+
+  function maybeStart() {
+    if (bgLoaded && fontLoaded) {
+      render();      // ahora sí, fuente + fondo listos
+    }
+  }
 
   function render() {
     const nombre   = document.getElementById('nombre').value   || 'NOMBRE ESTUDIANTE';
